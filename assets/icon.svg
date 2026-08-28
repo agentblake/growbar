@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#223d2c"/>
+      <stop offset="1" stop-color="#0a1510"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#74c54d"/>
+      <stop offset="0.58" stop-color="#c4e868"/>
+      <stop offset="1" stop-color="#ff7062"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-80%" width="180%" height="260%">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+  </defs>
+  <rect x="56" y="56" width="912" height="912" rx="218" fill="url(#bg)"/>
+  <path d="M512 814c4-178-16-306-64-385-121-3-203-69-225-194 130-5 230 54 283 160 45-137 155-218 319-224-3 169-105 282-268 306-10 89-5 201 14 337h-59Z" fill="#8bd450" opacity=".18"/>
+  <path d="M520 798c2-167-15-286-53-357" fill="none" stroke="#eaf6df" stroke-width="46" stroke-linecap="round"/>
+  <path d="M473 442c-118-2-196-62-216-176 119-3 207 52 255 155-8 13-21 20-39 21Z" fill="#8bd450"/>
+  <path d="M528 449c37-145 138-229 284-241-2 145-93 240-246 269-21-3-34-13-38-28Z" fill="#a8df5e"/>
+  <rect x="178" y="677" width="668" height="82" rx="41" fill="url(#bar)" opacity=".28" filter="url(#glow)"/>
+  <rect x="166" y="666" width="692" height="76" rx="38" fill="#08100c" stroke="#dcead7" stroke-width="14"/>
+  <rect x="202" y="690" width="620" height="28" rx="14" fill="url(#bar)"/>
+  <circle cx="268" cy="704" r="9" fill="#e9f8d9"/>
+  <circle cx="512" cy="704" r="9" fill="#f3ffd8"/>
+  <circle cx="756" cy="704" r="9" fill="#ffd2c7"/>
+</svg>

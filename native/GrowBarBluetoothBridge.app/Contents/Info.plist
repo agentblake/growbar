@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key>
+  <string>GrowBar Bluetooth Bridge</string>
+  <key>CFBundleExecutable</key>
+  <string>GrowBarBluetoothBridge</string>
+  <key>CFBundleIdentifier</key>
+  <string>local.growbar.bluetooth-bridge</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+  <string>GrowBar Bluetooth Bridge</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+  <string>0.8.1</string>
+  <key>CFBundleVersion</key>
+  <string>2</string>
+  <key>LSBackgroundOnly</key>
+  <true/>
+  <key>NSBluetoothAlwaysUsageDescription</key>
+  <string>GrowBar uses Bluetooth to directly control the PB12 imported from your local amaran Desktop database.</string>
+  <key>NSBluetoothPeripheralUsageDescription</key>
+  <string>GrowBar uses Bluetooth to directly control the PB12 imported from your local amaran Desktop database.</string>
+</dict>
+</plist>

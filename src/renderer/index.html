@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'">
+  <title>GrowBar</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div>
+        <p class="eyebrow">PB12 PLANT LIGHT</p>
+        <h1>GrowBar</h1>
+        <p class="lede">A calm, local light schedule for healthy growth.</p>
+      </div>
+    </header>
+
+    <details id="connection-panel" class="panel connection-panel" open>
+      <summary class="panel-heading connection-heading">
+        <div><p class="eyebrow">PB12 CONNECTION</p><h2>Direct Bluetooth</h2><p class="panel-subtitle">Setup details stay tucked away once the light is ready.</p></div>
+        <div id="connection" class="status status-setup"><span></span><div><strong>Import needed</strong><small>Pair the PB12 in amaran Desktop once.</small></div></div>
+      </summary>
+      <div class="connection-details">
+        <div class="connection-body">
+          <ol class="import-steps">
+            <li><span>1</span><div><strong>Pair in amaran Desktop</strong><small>Add the PB12 and confirm that amaran can change its color. Do not reset or remove it afterward.</small></div></li>
+            <li><span>2</span><div><strong>Leave amaran open</strong><small>GrowBar reads the working <code>amaran.db</code> locally and stores an encrypted copy of only the mesh details it needs.</small></div></li>
+            <li><span>3</span><div><strong>Import and connect</strong><small>GrowBar closes amaran, takes over direct control, and reconnects automatically on future launches.</small></div></li>
+          </ol>
+          <div class="connection-actions">
+            <button id="adopt-direct" class="primary">Import amaran database</button>
+            <button id="reconnect" class="secondary hidden">Reconnect PB12</button>
+            <label class="switch setting-switch"><input id="launch-login" type="checkbox"><span></span>Launch GrowBar at login</label>
+          </div>
+        </div>
+        <div id="device-list" class="device-list"><p class="muted">No amaran mesh has been imported yet.</p></div>
+        <p class="connection-note">GrowBar follows the <code>amaran-BLE-control</code> model: amaran provisions the fixture once; GrowBar imports the local network key, application key, fixture address, and relay identity, encrypts them with macOS secure storage, then sends raw Bluetooth Mesh commands itself. Keys are never displayed or sent off the Mac.</p>
+      </div>
+    </details>
+
+    <section class="now-grid">
+      <article class="now-card">
+        <p class="eyebrow">ACTIVE NOW</p>
+        <h2 id="current-name">—</h2>
+        <p id="current-detail" class="muted">Waiting for schedule</p>
+      </article>
+      <article class="now-card next">
+        <p class="eyebrow">NEXT</p>
+        <h2 id="next-name">—</h2>
+        <p id="next-detail" class="muted">—</p>
+      </article>
+      <button id="apply-current" class="primary">Apply current step</button>
+    </section>
+
+    <details class="panel custom-control-panel advanced-panel">
+      <summary class="panel-heading">
+        <div><p class="eyebrow">ADVANCED STUDIO</p><h2>Mix a precise full-bar color</h2><p class="panel-subtitle">Hardware-validated HSI, CCT ±G, Gel, RGBW and xy commands · four-hour override</p></div>
+        <span class="advanced-disclosure">OPEN STUDIO</span>
+      </summary>
+      <div class="custom-control-content">
+        <div id="custom-status" class="override-status">
+          <strong>Daily Rhythm is in control</strong>
+          <span>Build a full-bar color for four hours. Daily Rhythm resumes automatically afterward.</span>
+        </div>
+        <div class="advanced-return"><button id="cancel-custom" class="secondary hidden">Return to Daily Rhythm</button></div>
+        <div class="custom-control-toolbar">
+          <label><span>Color model</span><select id="custom-mode"><option value="global-hsi">HSI</option><option value="global-cct">White / CCT ±G</option><option value="global-gel">Native Gel</option><option value="global-rgbw">RGBW emitters</option><option value="global-xy">CIE xy</option></select></label>
+          <button id="apply-custom" class="primary">Apply for four hours</button>
+        </div>
+        <div id="custom-mode-fields">
+          <div class="custom-fields" data-custom-mode="global-hsi">
+            <label><span>Hue (0–360°)</span><input id="custom-hue" type="number" min="0" max="360" step="1" value="240"></label>
+            <label><span>Saturation (0–100%)</span><input id="custom-saturation" type="number" min="0" max="100" step="1" value="100"></label>
+            <label><span>Intensity (0–100%)</span><input id="custom-hsi-intensity" type="number" min="0" max="100" step="1" value="50"></label>
+          </div>
+          <div class="custom-fields hidden" data-custom-mode="global-cct">
+            <label><span>Color temperature (K)</span><input id="custom-cct" type="number" min="2000" max="10000" step="100" value="4300"></label>
+            <label><span>Green / magenta correction (±G %)</span><input id="custom-gm" type="number" min="-100" max="100" step="10" value="0"></label>
+            <label><span>Intensity (0–100%)</span><input id="custom-cct-intensity" type="number" min="0" max="100" step="1" value="50"></label>
+            <p class="custom-field-note">Native ±G is encoded around neutral 0%; conservative +10% and −10% samples were physically validated.</p>
+          </div>
+          <div class="custom-fields hidden" data-custom-mode="global-gel">
+            <label class="gel-search"><span>Search 318 gels</span><input id="custom-gel-search" type="search" placeholder="Brand, series, number, or name" autocomplete="off"></label>
+            <label><span>Gel identity</span><select id="custom-gel" size="8" aria-label="LEE and Rosco Gel catalog"></select></label>
+            <label><span>Base CCT (K)</span><input id="custom-gel-cct" type="number" min="2000" max="10000" step="100" value="4300"></label>
+            <label><span>Brand address</span><input id="custom-gel-origin" type="number" min="0" max="1" step="1" value="0" readonly></label>
+            <label><span>Series address</span><input id="custom-gel-type" type="number" min="0" max="15" step="1" value="0" readonly></label>
+            <label><span>Library index</span><input id="custom-gel-color" type="number" min="0" max="1023" step="1" value="4" readonly></label>
+            <label><span>Intensity (0–100%)</span><input id="custom-gel-intensity" type="number" min="0" max="100" step="1" value="50"></label>
+            <p id="custom-gel-detail" class="custom-field-note">Choose any native LEE or Rosco entry. Search covers brand, series, number, and name.</p>
+          </div>
+          <div class="custom-fields custom-fields-rgbw hidden" data-custom-mode="global-rgbw">
+            <label><span>Red (0–100%)</span><input id="custom-red" type="number" min="0" max="100" step="1" value="100"></label>
+            <label><span>Green (0–100%)</span><input id="custom-green" type="number" min="0" max="100" step="1" value="0"></label>
+            <label><span>Blue (0–100%)</span><input id="custom-blue" type="number" min="0" max="100" step="1" value="0"></label>
+            <label><span>Warm white (0–100%)</span><input id="custom-warm-white" type="number" min="0" max="100" step="1" value="0"></label>
+            <label><span>Cool white (0–100%)</span><input id="custom-cool-white" type="number" min="0" max="100" step="1" value="0"></label>
+            <label><span>Intensity (0–100%)</span><input id="custom-rgbw-intensity" type="number" min="0" max="100" step="1" value="50"></label>
+          </div>
+          <div class="custom-fields hidden" data-custom-mode="global-xy">
+            <label><span>x coordinate</span><input id="custom-x" type="number" min="0" max="1" step="0.0001" value="0.1442"></label>
+            <label><span>y coordinate</span><input id="custom-y" type="number" min="0" max="1" step="0.0001" value="0.0566"></label>
+            <label><span>Intensity (0–100%)</span><input id="custom-xy-intensity" type="number" min="0" max="100" step="1" value="50"></label>
+          </div>
+        </div>
+        <p class="custom-control-note">RGBW addresses the PB12's red, green, blue, warm-white and cool-white emitters directly. xy sends normalized coordinates directly; Sidus Link's BT.709 and DCI-P3 choices appear to convert a chosen color into xy coordinates rather than transmit a separate gamut mode.</p>
+      </div>
+    </details>
+
+    <section class="panel daily-rhythm-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">DAILY RHYTHM · PRIMARY</p><h2>Your money-tree sunlight curve <span class="time-standard">24-hour time</span></h2><p class="panel-subtitle">Brightness and white temperature flow continuously between the editable anchors while preserving 23:15–09:15 darkness.</p></div>
+        <div class="heading-actions"><label class="switch"><input id="sunlight-simulation" type="checkbox"><span></span>Smooth sunlight</label><label class="switch"><input id="schedule-enabled" type="checkbox"><span></span>Schedule active</label><button id="add-step" class="secondary">+ Add anchor</button></div>
+      </div>
+      <div id="rhythm-visual" class="rhythm-visual" aria-live="polite" aria-label="Live Daily Rhythm sunlight visualization"></div>
+      <div class="schedule-editor-heading"><strong>Edit schedule anchors</strong><span>Times use 24-hour HH:MM. Smooth sunlight moves toward the next anchor instead of jumping.</span></div>
+      <div id="schedule-list" class="schedule-list"></div>
+      <div class="schedule-foot">
+        <p><strong>Money-tree preset:</strong> 09:15–23:15, mostly full-spectrum white, with a broad red-rich evening and ten hours of darkness. Start around 2–4 total DLI including window light; measure at the canopy because brightness percentage alone cannot determine plant light.</p>
+        <button id="restore-defaults" class="text-button">Restore money-tree preset</button>
+      </div>
+    </section>
+
+    <section class="panel mood-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">MOOD COLORS</p><h2>Pick an atmosphere</h2><p class="panel-subtitle">Original artwork · calibrated HSI, RGBW, white and Gel recipes · four-hour override</p></div>
+        <button id="cancel-override" class="secondary hidden">Return to Daily Rhythm</button>
+      </div>
+      <div class="mood-content">
+        <div id="override-status" class="override-status">
+          <strong>Daily Rhythm is in control</strong>
+          <span>Choose a color for four hours—even during scheduled darkness. Daily Rhythm resumes automatically afterward.</span>
+        </div>
+        <div class="gallery-intro"><strong>One click, four hours</strong><span>Each card is a tuned PB12 recipe with original generated artwork.</span></div>
+        <div id="mood-buttons" class="mood-buttons" aria-label="Mood color presets"></div>
+      </div>
+    </section>
+
+    <section class="panel animation-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">LIGHT ANIMATIONS</p><h2>Native effects and section motion</h2><p class="panel-subtitle">Validated onboard engines plus GrowBar's 32-section studio · four-hour override</p></div>
+        <div class="animation-actions"><label class="speed-control"><span>Section layout</span><select id="partition-zones"><option value="4">4 sections</option><option value="8">8 sections</option><option value="12">12 sections</option><option value="16">16 sections</option><option value="24">24 sections</option><option value="32">32 sections</option></select></label><button id="apply-partition-layout" class="secondary">Set layout</button><label class="speed-control"><span>Streamed maximum frame rate</span><select id="animation-fps"><option value="5">5 FPS · Gentle</option><option value="10">10 FPS</option><option value="15">15 FPS</option><option value="24">24 FPS · Smooth</option><option value="30">30 FPS · Fast</option><option value="60">60 FPS · When safe</option></select></label><button id="cancel-animation" class="secondary hidden">Return to Daily Rhythm</button></div>
+      </div>
+      <div class="mood-content">
+        <div id="animation-status" class="override-status">
+          <strong>Daily Rhythm is in control</strong>
+          <span>Choose an animation for four hours—even during scheduled darkness. Daily Rhythm resumes automatically afterward.</span>
+        </div>
+        <div class="gallery-intro"><strong>One click, four hours</strong><span>Curated motion built from the PB12 engines and the validated 32-section control path.</span></div>
+        <div id="animation-buttons" class="mood-buttons animation-buttons" aria-label="Light animation presets"></div>
+        <details class="advanced-studio">
+          <summary><span><strong>Advanced Animation Studio</strong><small>Design native, section, pulse, and System effects yourself</small></span><span>OPEN STUDIO</span></summary>
+          <div class="advanced-studio-body">
+        <details class="native-fx-builder">
+          <summary>Design a native PB12 Pixel FX</summary>
+          <p>Runs inside the PB12's onboard effect engine, so it stays smooth without streaming section frames over Bluetooth.</p>
+          <div class="native-fx-fields">
+            <label><span>Effect</span><select id="native-fx-kind"><option value="fade">Color Fade</option><option value="cycle">Color Cycle</option><option value="chase-1">One-color Chase</option><option value="chase-2">Two-color Chase</option><option value="chase-3">Three-color Chase</option><option value="rainbow">Rainbow</option><option value="fire">Pixel Fire</option></select></label>
+            <label><span>Intensity %</span><input id="native-fx-intensity" type="number" min="1" max="100" step="1" value="45"></label>
+            <label><span>Speed (0–1000)</span><input id="native-fx-speed" type="number" min="0" max="1000" step="1" value="160"></label>
+            <label><span>Direction</span><select id="native-fx-direction"><option value="1">Forward</option><option value="0">Reverse</option></select></label>
+            <label><span>Color 1 / flame</span><input id="native-fx-color-1" type="color" value="#ff3b18"></label>
+            <label><span>Color 2</span><input id="native-fx-color-2" type="color" value="#00d5ff"></label>
+            <label><span>Color 3</span><input id="native-fx-color-3" type="color" value="#9b4dff"></label>
+            <label><span>Base / background</span><input id="native-fx-background" type="color" value="#120020"></label>
+            <label><span>Cycle transition</span><select id="native-fx-style"><option value="0">Gradient</option><option value="1">Transient</option></select></label>
+            <label><span>Chase grouping (0–3)</span><input id="native-fx-group" type="number" min="0" max="3" step="1" value="1"></label>
+            <label><span>Chase pixel length (0–7)</span><input id="native-fx-length" type="number" min="0" max="7" step="1" value="1"></label>
+            <label><span>Fire minimum %</span><input id="native-fx-minimum" type="number" min="0" max="100" step="1" value="8"></label>
+          </div>
+          <button id="apply-native-fx" class="primary">Run native effect for four hours</button>
+        </details>
+        <details class="native-fx-builder">
+          <summary>Design a section-selective Breath</summary>
+          <p>The PB12 breathes only the selected sections with its onboard partition engine.</p>
+          <div class="native-fx-fields">
+            <label><span>Section pattern</span><select id="breath-zones"><option value="all">All sections</option><option value="odd">Alternating A</option><option value="even">Alternating B</option><option value="ends">End sections</option><option value="center">Center sections</option></select></label>
+            <label><span>Color</span><input id="breath-color" type="color" value="#6d4dff"></label>
+            <label><span>Maximum intensity %</span><input id="breath-intensity" type="number" min="1" max="100" step="1" value="35"></label>
+            <label><span>Minimum intensity %</span><input id="breath-minimum" type="number" min="0" max="12.7" step="0.1" value="2.5"></label>
+            <label><span>Breath period (0.1–22 s)</span><input id="breath-frequency" type="number" min="0.1" max="22" step="0.1" value="2"></label>
+          </div>
+          <button id="apply-partition-breath" class="primary">Run section Breath for four hours</button>
+        </details>
+        <details class="native-fx-builder">
+          <summary>Design Pulsing III</summary>
+          <p>A physically validated smooth full-bar pulse using the PB12's System FX engine.</p>
+          <div class="native-fx-fields">
+            <label><span>White / CCT (K)</span><input id="pulsing-cct" type="number" min="2000" max="10000" step="50" value="4300"></label>
+            <label><span>Intensity %</span><input id="pulsing-intensity" type="number" min="0" max="100" step="1" value="35"></label>
+            <label><span>Pulses per minute</span><input id="pulsing-rate" type="number" min="20" max="200" step="1" value="20"></label>
+          </div>
+          <button id="apply-pulsing3" class="primary">Run Pulsing III for four hours</button>
+        </details>
+        <details class="native-fx-builder">
+          <summary>Design Partition Flash / Pulsing</summary>
+          <p>Uses the PB12's legacy partition engine. Unified affects the entire bar together; Sequential walks every section. These effects are whole-fixture patterns—the PB12 ignores selective masks.</p>
+          <div class="native-fx-fields">
+            <label><span>Effect</span><select id="partition-pulse-kind"><option value="pulsing">Pulsing</option><option value="flash">Flash</option></select></label>
+            <label><span>Motion</span><select id="partition-pulse-trigger"><option value="unified">Unified full bar</option><option value="sequential">Sequential sections</option></select></label>
+            <label><span>Section layout</span><select id="partition-pulse-zones"><option value="4">4 sections</option><option value="8">8 sections</option><option value="12">12 sections</option><option value="16">16 sections</option><option value="24">24 sections</option><option value="32" selected>32 sections</option></select></label>
+            <label><span>Intensity %</span><input id="partition-pulse-intensity" type="number" min="0" max="100" step="1" value="35"></label>
+            <label><span>Frequency (0.1–20 Hz)</span><input id="partition-pulse-frequency" type="number" min="0.1" max="20" step="0.1" value="1"></label>
+          </div>
+          <p class="custom-field-note"><strong>Flashing-light warning:</strong> high frequencies can be uncomfortable or unsafe for photosensitive people. Flash is hardware-validated in 4- and 8-section layouts; GrowBar uses the corrected stop → enable → parameters packet order.</p>
+          <button id="apply-partition-pulse" class="primary">Run partition effect for four hours</button>
+        </details>
+        <details class="native-fx-builder">
+          <summary>Design a full-bar System effect</summary>
+          <p>Hardware-confirmed Sidus effects at the captured 5% intensity: Candle, TV, Fire, Strobe, Lightning, Paparazzi and Faulty Bulb.</p>
+          <div class="native-fx-fields">
+            <label><span>Effect</span><select id="system-effect-kind"><option value="candle">Candle</option><option value="tv">TV</option><option value="fire">Fire</option><option value="strobe">Strobe</option><option value="lightning">Lightning</option><option value="paparazzi">Paparazzi</option><option value="faulty-bulb">Faulty Bulb</option></select></label>
+            <label><span>Frequency (1–10)</span><input id="system-effect-frequency" type="number" min="1" max="10" step="1" value="1"></label>
+            <label><span>Palette</span><select id="system-effect-color"><option value="0">Native / warm</option><option value="2">Alternate captured palette</option></select></label>
+          </div>
+          <p class="custom-field-note"><strong>Flashing-light warning:</strong> Strobe, Lightning, Paparazzi and Faulty Bulb can produce abrupt flashes. Lightning uses its single hardware-validated frequency. Candle uses its native warm palette.</p>
+          <button id="apply-system-effect" class="primary">Run System effect for four hours</button>
+        </details>
+          </div>
+        </details>
+        <p class="animation-note"><strong>Native PB12 FX</strong> use captured Fade, Cycle, Chase, Rainbow, Pixel Fire, partition Breath/Flash/Pulsing, Pulsing III and seven System state machines. <strong>Section Studio</strong> streams custom frames across the PB12's 32 independently addressable Bluetooth sections (three emitters per section), resampled into validated 4, 8, 12, 16, 24 or 32-section layouts. GrowBar caps streamed rates for Bluetooth throughput and Mesh sequence safety.</p>
+      </div>
+    </section>
+
+    <footer><div id="message" role="status"></div><button id="save" class="primary save">Save schedule</button></footer>
+  </main>
+
+  <template id="schedule-row-template">
+    <article class="schedule-row">
+      <label class="time-wrap"><span>Time (HH:MM)</span><input class="event-time" type="text" inputmode="numeric" maxlength="5" pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="21:00" autocomplete="off" spellcheck="false" aria-label="Time in 24-hour HH:MM format" required><span class="timeline-dot"></span></label>
+      <label class="name-field"><span>Step name</span><input class="event-label" maxlength="80"></label>
+      <label><span>Light mode</span><select class="event-mode"><option value="cct">White / CCT</option><option value="hsi">Color / HSI</option><option value="off">Off / dark</option></select></label>
+      <div class="mode-fields"></div>
+      <div class="row-actions"><button class="test-step secondary" title="Apply this step now">Test</button><button class="remove-step icon-button" title="Remove step" aria-label="Remove step">×</button></div>
+    </article>
+  </template>
+  <script src="time.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
